@@ -1,0 +1,42 @@
+//Design Code
+module ha(output sum,carry, input a,b);
+  assign
+    sum=a^b;
+  assign
+    carry=a&b;
+endmodule
+module fa(output sum,carry, input a ,b, c);
+  wire sum1,carry1,carry2;
+  ha a1(sum1,carry1,a,b);
+  ha a2(sum,carry2,sum1,c);
+ assign
+   carry=carry1|carry2;
+endmodule
+module rca(output cout,output [3:0]s, input [3:0]a,b);
+  wire [2:0]c;
+  ha a3(s[0],c[0],a[0],b[0]);
+  fa a4(s[1],c[1],a[1],b[1],c[0]);
+  fa a5(s[2],c[2],a[2],b[2],c[1]);
+  fa a6(s[3],cout,a[3],b[3],c[2]);
+endmodule
+
+//Test Bench Code
+module tb();
+  wire cout;
+  wire [3:0]s;
+  reg [3:0]a,b;
+  rca DUT(cout,s,a,b);
+  initial
+    begin 
+      integer i;
+      for(i=0;i<256;i=i+1)
+        begin
+          {a,b}=i;
+          #10;
+        end
+    end
+  initial
+    begin
+      $monitor("a=%d,b=%d,s=%d",a,b,{cout,s});
+    end
+endmodule
